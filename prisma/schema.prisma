@@ -1,0 +1,120 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String?
+  password  String
+  cart      Cart?
+  orders    Order[]
+  reviews   Review[]
+  createdAt DateTime @default(now())
+}
+
+model Category {
+  id        String    @id @default(uuid())
+  name      String    @unique
+  products  Product[]
+  createdAt DateTime  @default(now())
+}
+
+model Product {
+  id          String      @id @default(uuid())
+  name        String
+  description String?
+  price       Decimal     @db.Decimal(10,2)
+  category    Category?   @relation(fields: [categoryId], references: [id])
+  categoryId  String?
+  variations  Variation[]
+  reviews     Review[]
+  createdAt   DateTime    @default(now())
+}
+
+model Variation {
+  id        String   @id @default(uuid())
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
+  name      String?
+  sku       String   @unique
+  price     Decimal? @db.Decimal(10,2)
+  stock     Int?
+  cartItems CartItem[]
+  orderItems OrderItem[]
+  createdAt DateTime @default(now())
+}
+
+model Cart {
+  id        String     @id @default(uuid())
+  user      User       @relation(fields: [userId], references: [id])
+  userId    String     @unique
+  items     CartItem[]
+  createdAt DateTime   @default(now())
+}
+
+model CartItem {
+  id            String        @id @default(uuid())
+  cart          Cart          @relation(fields: [cartId], references: [id])
+  cartId        String
+  variation     Variation     @relation(fields: [variationId], references: [id])
+  variationId   String
+  quantity      Int           @default(1)
+  customization Customization?
+  createdAt     DateTime      @default(now())
+}
+
+model Customization {
+  id         String   @id @default(uuid())
+  cartItem   CartItem @relation(fields: [cartItemId], references: [id])
+  cartItemId String   @unique
+  text       String?
+  imageUrl   String?
+  createdAt  DateTime @default(now())
+}
+
+model Order {
+  id        String      @id @default(uuid())
+  user      User        @relation(fields: [userId], references: [id])
+  userId    String
+  items     OrderItem[]
+  coupon    Coupon?     @relation(fields: [couponId], references: [id])
+  couponId  String?
+  total     Decimal     @db.Decimal(10,2)
+  createdAt DateTime    @default(now())
+}
+
+model OrderItem {
+  id          String     @id @default(uuid())
+  order       Order      @relation(fields: [orderId], references: [id])
+  orderId     String
+  variation   Variation  @relation(fields: [variationId], references: [id])
+  variationId String
+  quantity    Int
+  price       Decimal    @db.Decimal(10,2)
+  createdAt   DateTime   @default(now())
+}
+
+model Coupon {
+  id       String  @id @default(uuid())
+  code     String  @unique
+  discount Float
+  orders   Order[]
+  createdAt DateTime @default(now())
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+}
