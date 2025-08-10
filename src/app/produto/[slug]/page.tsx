@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
 interface ProductPageProps {
@@ -38,7 +39,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
           ))}
         </ul>
       </div>
-      <Button>Personalizar</Button>
+      <Button asChild>
+        <Link href={`/personalizar/${product.slug}`}>Personalizar</Link>
+      </Button>
     </div>
   );
 }

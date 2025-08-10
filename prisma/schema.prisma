@@ -76,6 +76,8 @@ model Customization {
   cartItem   CartItem @relation(fields: [cartItemId], references: [id])
   cartItemId String   @unique
   text       String?
+  textColor  String?
+  fontFamily String?
   imageUrl   String?
   createdAt  DateTime @default(now())
 }
