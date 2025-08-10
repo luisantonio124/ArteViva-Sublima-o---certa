@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getOrCreateUser } from '@/lib/auth';
 import { promises as fs } from 'fs';
 import path from 'path';
 
@@ -35,12 +36,7 @@ export async function POST(req: NextRequest) {
     imageUrl = `/uploads/${filename}`;
   }
 
-  // Usuário e carrinho de demonstração
-  const user = await prisma.user.upsert({
-    where: { email: 'demo@demo.com' },
-    update: {},
-    create: { email: 'demo@demo.com', password: 'demo' },
-  });
+  const user = await getOrCreateUser();
 
   const cart = await prisma.cart.upsert({
     where: { userId: user.id },
@@ -65,4 +61,21 @@ export async function POST(req: NextRequest) {
   });
 
   return NextResponse.json(item);
+}
+
+export async function GET() {
+  const user = await getOrCreateUser();
+  const cart = await prisma.cart.findUnique({
+    where: { userId: user.id },
+    include: { items: { include: { variation: true, customization: true } } },
+  });
+  return NextResponse.json(cart || {});
+}
+
+export async function DELETE(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const itemId = searchParams.get('itemId');
+  if (!itemId) return NextResponse.json({ error: 'itemId requerido' }, { status: 400 });
+  await prisma.cartItem.delete({ where: { id: itemId } });
+  return NextResponse.json({ ok: true });
 }
