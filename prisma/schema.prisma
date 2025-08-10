@@ -79,6 +79,7 @@ model Customization {
   textColor  String?
   fontFamily String?
   imageUrl   String?
+  approved   Boolean  @default(false)
   createdAt  DateTime @default(now())
 }
 
@@ -91,6 +92,7 @@ model Order {
   couponId  String?
   total     Decimal     @db.Decimal(10,2)
   status    String      @default("pending")
+  trackingCode String?
   createdAt DateTime    @default(now())
 }
 
