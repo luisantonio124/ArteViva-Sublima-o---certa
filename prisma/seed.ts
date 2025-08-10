@@ -14,8 +14,10 @@ async function main() {
   await prisma.product.create({
     data: {
       name: "Caneca Branca",
+      slug: "caneca-branca",
       description: "Caneca para sublimação 325ml",
       price: 25.0,
+      imageUrl: "https://via.placeholder.com/300",
       categoryId: canecas.id,
       variations: {
         create: [
@@ -29,8 +31,10 @@ async function main() {
   await prisma.product.create({
     data: {
       name: "Camiseta Poliéster",
+      slug: "camiseta-poliester",
       description: "Camiseta para sublimação tamanho M",
       price: 35.0,
+      imageUrl: "https://via.placeholder.com/300",
       categoryId: camisetas.id,
       variations: {
         create: [

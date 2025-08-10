@@ -28,8 +28,10 @@ model Category {
 model Product {
   id          String      @id @default(uuid())
   name        String
+  slug        String      @unique
   description String?
   price       Decimal     @db.Decimal(10,2)
+  imageUrl    String?
   category    Category?   @relation(fields: [categoryId], references: [id])
   categoryId  String?
   variations  Variation[]
